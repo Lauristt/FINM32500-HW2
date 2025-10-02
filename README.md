@@ -1,22 +1,20 @@
-# 📊 FINM32500-HW2: Quantitative Trading Strategy Comparison
+#  FINM32500-HW2: Quantitative Trading Strategy Comparison
 
 A comprehensive framework for implementing, backtesting, and comparing various algorithmic trading strategies using Python and Jupyter Notebooks.
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue) ![License](https://img.shields.io/badge/license-None-lightgrey) ![Stars](https://img.shields.io/github/stars/Lauristt/FINM32500-HW2?style=social) ![Forks](https://img.shields.io/github/forks/Lauristt/FINM32500-HW2?style=social)
-
-![Strategy Comparison Dashboard](/preview_example.png)
+Author: Yuting Li, Xiangchen Liu, Rajdeep Choudhury, Simon Guo
 
 
-## ✨ Features
+##  Features
 
-*   📈 **Multiple Strategy Implementations**: Explore and utilize pre-built strategies including Moving Average Crossover, MACD, RSI, and Volatility Breakout.
-*   ⚙️ **Modular Design**: Each strategy is encapsulated in its own Python file, promoting reusability and easy extension.
-*   📊 **Interactive Comparison**: Utilize Jupyter Notebooks (`StrategyComparison.ipynb`) for interactive analysis, backtesting, and visual comparison of strategy performance.
-*   📦 **Robust Price Data Loader**: `PriceLoader.py` provides a reliable mechanism to fetch and manage historical financial instrument data.
-*   ⭐ **Benchmark Performance**: Includes a `BenchmarkStrategy.py` to compare custom strategy returns against a simple market benchmark.
+*    **Multiple Strategy Implementations**: Explore and utilize pre-built strategies including Moving Average Crossover, MACD, RSI, and Volatility Breakout.
+*    **Modular Design**: Each strategy is encapsulated in its own Python file, promoting reusability and easy extension.
+*    **Interactive Comparison**: Utilize Jupyter Notebooks (`StrategyComparison.ipynb`) for interactive analysis, backtesting, and visual comparison of strategy performance.
+*    **Robust Price Data Loader**: `PriceLoader.py` provides a reliable mechanism to fetch and manage historical financial instrument data.
+*    **Benchmark Performance**: Includes a `BenchmarkStrategy.py` to compare custom strategy returns against a simple market benchmark.
 
 
-## 🚀 Installation Guide
+##  Installation Guide
 
 To get started with this project, follow these steps to set up your environment and dependencies.
 
@@ -64,7 +62,7 @@ jupyter lab
 Your web browser should open to the Jupyter Lab interface. Navigate to `StrategyComparison.ipynb` and open it.
 
 
-## 💡 Usage Examples
+## Usage Examples
 
 The core of this project is the `StrategyComparison.ipynb` notebook, which allows you to load data, apply different strategies, and visualize their performance.
 
@@ -102,7 +100,7 @@ The core of this project is the `StrategyComparison.ipynb` notebook, which allow
 Feel free to modify strategy parameters, add new strategies, or experiment with different financial instruments directly within the notebook.
 
 
-## 🗺️ Project Roadmap
+## Project Roadmap
 
 This project is continuously evolving. Here are some planned enhancements and future goals:
 
@@ -113,7 +111,7 @@ This project is continuously evolving. Here are some planned enhancements and fu
 *   **Cloud Integration**: Explore options for fetching data from cloud sources or deploying strategies to cloud platforms.
 
 
-## 🤝 Contribution Guidelines
+## Contribution Guidelines
 
 We welcome contributions to enhance this project! Please follow these guidelines:
 
@@ -131,9 +129,10 @@ We welcome contributions to enhance this project! Please follow these guidelines
     3.  Provide a detailed description of your changes in the PR.
 
 
-## 📄 License Information
+##  License
 
-This project is currently provided without a specific open-source license. As such, all rights are reserved by the main contributor, Lauristt.
+This project is protected under the MIT LICENSE. For more details, refer to the LICENSE file.
 
-*   **Usage Restrictions**: Redistribution, modification, or commercial use of this software is not permitted without explicit permission from the author.
-*   **Copyright**: © 2023 Lauristt. All rights reserved.
+##  Acknowledgments
+
+This project was created as part of the FINM 32500 course at The University of Chicago. Inspiration from various open-source backtesting frameworks.
