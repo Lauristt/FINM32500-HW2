@@ -1,4 +1,4 @@
-#  FINM32500-HW2: Quantitative Trading Strategy Comparison
+#  FINM32500-HW2: Multi-Signal Strategy Simulation on S&P 500
 
 A comprehensive framework for implementing, backtesting, and comparing various algorithmic trading strategies using Python and Jupyter Notebooks.
 
