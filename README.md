@@ -6,7 +6,8 @@ Author: Yuting Li, Xiangchen Liu, Rajdeep Choudhury, Simon Guo
 
 
 ##  Features
-
+*    **Fully Vectorized Execution Logic**: Optimized the core trading execution logic with numpy as much as possible, making it almost the quickest backtest engine.
+*    **Automatic Backtest Report with Transaction Cost Included**: Included Transaction costs logic (one can set by himself). Implemented function that directly calculate sharpe and maximal drawdown.
 *    **Multiple Strategy Implementations**: Explore and utilize pre-built strategies including Moving Average Crossover, MACD, RSI, and Volatility Breakout.
 *    **Modular Design**: Each strategy is encapsulated in its own Python file, promoting reusability and easy extension.
 *    **Interactive Comparison**: Utilize Jupyter Notebooks (`StrategyComparison.ipynb`) for interactive analysis, backtesting, and visual comparison of strategy performance.
