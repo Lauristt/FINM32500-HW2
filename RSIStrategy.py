@@ -23,29 +23,19 @@ class RSIStrategy(Strategy):
         self.rsi_window = rsi_window
         self.oversold_threshold = oversold_threshold
         self.overbought_threshold = overbought_threshold
-        print(
-            f"Generating RSI signals (Window: {self.rsi_window}, Buy Threshold: >{self.oversold_threshold}, Sell Threshold: <{self.overbought_threshold})...")
 
     def generate_signals(self) -> pd.DataFrame:
         delta = self.prices.diff()
-        gain = (delta.where(delta > 0, 0)).rolling(window=self.rsi_window).mean()
-        loss = (-delta.where(delta < 0, 0)).rolling(window=self.rsi_window).mean()
+        gain = (delta.where(delta > 0, 0)).ewm(alpha=1/self.rsi_window, adjust=False).mean()
+        loss = (-delta.where(delta < 0, 0)).ewm(alpha=1/self.rsi_window, adjust=False).mean()
 
         rs = gain / loss
         rsi = 100 - (100 / (1 + rs))
 
-        # Initialize signals DataFrame with NaNs
-        signals = pd.DataFrame(np.nan, index=self.prices.index, columns=self.prices.columns)
+        signals = pd.DataFrame(0.0, index=self.prices.index, columns=self.prices.columns)
+        signals[rsi < self.oversold_threshold] = 1.0
 
-        # Generate buy signals: RSI crosses above oversold threshold
-        signals[rsi > self.oversold_threshold] = 1.0
-
-        # Generate sell signals: RSI crosses below overbought threshold
-        signals[rsi < self.overbought_threshold] = 0.0
-        signals.ffill(inplace=True)
-        signals.fillna(0, inplace=True)
         return signals.astype(int)
-
 
 if __name__ == "__main__":
     price_database = PriceLoader(data_dir=DATA_DIR)
