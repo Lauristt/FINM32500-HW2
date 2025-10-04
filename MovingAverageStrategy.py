@@ -17,6 +17,7 @@ TRANSACTION_COST_RATE = 0.001  # One-way transaction cost
 
 class Strategy(ABC):
     """
+    Vectorized Backtest Execution Engine, No Peeking Design (Baseclass).
     Ensure that all sub-strategies enforce the rule of using the previous
     day's signal for the current day's trade. This architecture prevents lookahead bias.
     """
@@ -48,7 +49,7 @@ class Strategy(ABC):
         start_time = time.time()
         print(f"Running backtest for {self.__class__.__name__}...")
         raw_signals = self.generate_signals()
-        # CORE: the key line that ensures the validity of the backtest.
+        # CORE: the key line that ensures the validity of the backtest (No peeking).
         signals = raw_signals.shift(1)
         # Generate trade orders (1: buy, -1: sell).
         trades = signals.diff().fillna(0)
@@ -59,40 +60,50 @@ class Strategy(ABC):
 
     def _execute_trade_loop(self, trades: pd.DataFrame):
         """
-        main trade execution logic.
+        Fully vectorized. Main trade execution logic
         """
-        # Start from the second row to allow for initial signal generation
-        for i in range(1, len(self.prices)):
+        prices_np = self.prices.to_numpy()
+        trades_np = trades.to_numpy()
+        num_days, num_tickers = prices_np.shape
+
+        self.holdings_df = pd.DataFrame(np.zeros_like(prices_np), index=self.prices.index, columns=self.prices.columns)
+        holdings_np = self.holdings_df.to_numpy()
+        self.cash_over_time = []
+
+        current_holdings = np.zeros(num_tickers)
+
+        # Main daily loop (necessary for stateful cash checks)
+        for i in range(1, num_days):
             date = self.prices.index[i]
-            # Carry over holdings from the previous day
-            self.holdings_df.iloc[i] = self.holdings_df.iloc[i - 1]
-            buy_signals = trades.loc[date] == 1
-            sell_signals = trades.loc[date] == -1
-            # Process buys
-            for ticker in buy_signals[buy_signals].index:
-                if self.holdings_df.at[self.prices.index[i - 1], ticker] == 0:  # Only buy if not already holding
-                    price_today = self.prices.at[date, ticker]
-                    if not pd.isna(price_today):
+            # Get data for the current day
+            daily_prices = prices_np[i]
+            daily_trades = trades_np[i]
+            sell_mask = (daily_trades == -1) & (current_holdings > 0)
+
+            if np.any(sell_mask):
+                shares_to_sell = current_holdings[sell_mask]
+                prices_of_sells = daily_prices[sell_mask]
+                proceeds = np.sum(shares_to_sell * prices_of_sells * (1 - TRANSACTION_COST_RATE))
+                self.cash += proceeds
+                current_holdings[sell_mask] = 0
+            buy_mask = (daily_trades == 1) & (current_holdings == 0)
+            buy_indices = np.where(buy_mask)[0] # np.where returns a tuple
+
+            if len(buy_indices) > 0:
+                for ticker_idx in buy_indices:
+                    price_today = daily_prices[ticker_idx]
+                    if not np.isnan(price_today):
                         cost = SHARE_PER_ORDER * price_today * (1 + TRANSACTION_COST_RATE)
                         if self.cash >= cost:
                             self.cash -= cost
-                            self.holdings_df.at[date, ticker] += SHARE_PER_ORDER
+                            current_holdings[ticker_idx] += SHARE_PER_ORDER
 
-            # Process sells
-            for ticker in sell_signals[sell_signals].index:
-                current_holding = self.holdings_df.at[self.prices.index[i - 1], ticker]
-                if current_holding > 0:
-                    price_today = self.prices.at[date, ticker]
-                    if not pd.isna(price_today):
-                        proceeds = current_holding * price_today * (1 - TRANSACTION_COST_RATE)
-                        self.cash += proceeds
-                        self.holdings_df.at[date, ticker] = 0  # Sell all shares
-
-            # Append the cash value for the current day
+            holdings_np[i] = current_holdings
             self.cash_over_time.append(self.cash)
 
-        # Convert daily cash list to a pandas Series
         self.cash_over_time = pd.Series(data=self.cash_over_time, index=self.prices.index[1:])
+        self.holdings_df = pd.DataFrame(holdings_np, index=self.prices.index, columns=self.prices.columns)
+
         market_value_over_time = (self.holdings_df * self.prices).sum(axis=1)
         market_value_over_time = market_value_over_time.iloc[1:]  # Align with cash_series index
 
